@@ -19,8 +19,11 @@ class Auth0Filter extends Filter {
 
   def apply(nextFilter: RequestHeader => Future[Result])
            (requestHeader: RequestHeader): Future[Result] = {
-
-    if(requestHeader.method == "OPTIONS"){
+    val godMode = config.getBoolean("auth0.godmode")
+    if(godMode){
+      Logger.warn("God mode is activated!. This is not recommended for production environments.")
+      nextFilter(requestHeader)
+    }else if(requestHeader.method == "OPTIONS" ){
       nextFilter(requestHeader)
     }else{
       val tokenEither = getToken(requestHeader)
