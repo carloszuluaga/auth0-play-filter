@@ -1,16 +1,17 @@
 package co.s4n.play.filters
 
+import javax.inject.Inject
+import akka.stream.Materializer
 import play.api.Logger
 import play.api.mvc._
 import play.api.mvc.Results._
-import scala.concurrent.Future
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import scala.concurrent.{ExecutionContext, Future}
 import com.auth0.jwt.JWTVerifier
 import org.apache.commons.codec.binary.Base64
 import scala.util.Try
 import com.typesafe.config.ConfigFactory
 
-class Auth0Filter extends Filter {
+class Auth0Filter @Inject() (implicit val mat: Materializer, ec: ExecutionContext) extends Filter{
 
   lazy val config = ConfigFactory.load()
   lazy val clientId = config.getString("auth0.clientId")
